@@ -1,115 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {#    <div style="padding: 20px; background-color: fuchsia"> Extended template index!</div>#}
-    {#    <a href="{% url 'articles' %}">To the first page</a>#}
+{#
+<div style="padding: 20px; background-color: fuchsia"> Extended template index!</div>#}
+{#    <a href="{% url 'articles' %}">To the first page</a>#}
 
 
-    {#    {% load static %}#}
+{#    {% load static %}#}
 
 
-
-    {% if query_search %}
-        <h5>
-            Результаты поиска для "{{ query_search }}":
-        </h5>
-        {#  {% else %}#}
-        {#      <h3>#}
-        {#    Результаты поиска все продукты:#}
-        {#      </h3>#}
-    {% endif %}
-
-
-    <!-- Page Content -->
-    <div class="container my-3">
-        {#        <div class="row">#}
-        {#            <div class="col-12">#}
-        {#                <h2>Products:</h2>#}
-        {#            </div>#}
-        {#        </div>#}
-        <div class="row">
-
-            {% for obj in page_obj %}
-
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow rounded">
-                        {% if obj.img_url %}
-                            <a href="{% url 'product_detail' slug=obj.slug %}">
-                                <img src="{{ obj.img_url.url }}" class="card-img-top" alt="{{ obj.title }}">
-                            </a>
-                        {% endif %}
-
-                        <div class="card-body">
-                            <p class="card-text">{{ obj.title }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="{% url 'product_detail' slug=obj.slug %}">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Detail</button>
-                                    </a>
-                                </div>
-
-                                <small class="text-muted">{{ obj.quantity }} шт</small>
-                                <small class="text-muted">{{ obj.price }} грн</small>
-
-                                {% if request.user.is_superuser %}
-                                    <div class="btn-group">
-                                        <a href="{% url 'update_product' slug=obj.slug %}">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                        </a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            {% endfor %}
+{% if query_search %}
+<h5>
+    Результаты поиска для "{{ query_search }}":
+</h5>
+{#  {% else %}#}
+{#      <h3>#}
+    {# Результаты поиска все продукты:#}
+    {# </h3>#}
+{% endif %}
 
 
-        </div>
+<!-- Page Content -->
+<h1>Список сеансов на {{ today|date }}</h1>
+<div class="sessions-list">
+    {% if sessions_today %}
+    {% for session in sessions_today %}
+    <div class="session-item">
+        <h2>{{ session.start_time|time }} - {{ session.end_time|time }} | {{ session.hall.name }} | Цена: {{
+            session.price }} грн.</h2>
+        <p>Дата показа: {{ session.start_date|date }}</p>
+        <p>Осталось мест: {{ session.available_seats }}</p>
+        <a href="{% url 'buy_ticket' session.id %}" class="btn btn-primary">Купить билет</a>
     </div>
+    {% endfor %}
+    {% else %}
+    <p>На сегодня нет запланированных сеансов.</p>
+    {% endif %}
+</div>
 
-    {#-----------pagination#}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; first</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo; first</span>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">previous</span>
-                </li>
-            {% endif %}
+<h1>Список сеансов на {{ tomorrow|date }}</h1>
+<div class="sessions-list">
+    {% if sessions_tomorrow %}
+    {% for session in sessions_tomorrow %}
+    <div class="session-item">
+        <h2>{{ session.start_time|time }} - {{ session.end_time|time }} | {{ session.hall.name }} | Цена: {{
+            session.price }} грн.</h2>
+        <p>Дата показа: {{ session.start_date|date }}</p>
+        <p>Осталось мест: {{ session.available_seats }}</p>
+        <a href="{% url 'buy_ticket' session.id %}" class="btn btn-primary">Купить билет</a>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>На завтра нет запланированных сеансов.</p>
+    {% endif %}
+</div>
 
-            <li class="page-item active">
+{#-----------pagination#}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; first</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">&laquo; first</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">previous</span>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
       <span class="page-link">
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
       </span>
-            </li>
+        </li>
 
-            {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">next</span>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">last &raquo;</span>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">next</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">last &raquo;</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 
 {% endblock %}

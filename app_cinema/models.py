@@ -26,7 +26,6 @@ class MovieSeason(models.Model):
     title = models.CharField(max_length=200, blank=False)
     description = models.TextField(max_length=10000, null=True)
     img_url = models.ImageField()
-    ticket_price = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     movie_show_time_starts = models.TimeField()
     movie_show_time_ends = models.TimeField()
     movie_session_start_date = models.DateField()
@@ -46,6 +45,7 @@ class CinemaSession(models.Model):
     movie_show_starts = models.DateTimeField()
     movie_show_ends = models.DateTimeField()
     empty_seats = models.PositiveIntegerField()
+    ticket_price = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     
     class Meta:
         ordering = ['title', 'movie_show_starts']
