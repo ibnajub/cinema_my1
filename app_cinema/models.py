@@ -19,7 +19,7 @@ class CinemaHall(models.Model):
         ordering = ['title']
     
     def __str__(self):
-        return "title: {}; number_of_seats: {}".format(self.title, self.number_of_seats)
+        return f"title: {self.title}; number_of_seats: {self.number_of_seats}"
 
 
 class MovieSeason(models.Model):
@@ -36,7 +36,7 @@ class MovieSeason(models.Model):
         ordering = ['movie_session_start_date']
     
     def __str__(self):
-        return "title: {}; movie_session_start_date: {}".format(self.title, self.movie_session_start_date)
+        return f"title: {self.title}; movie_session_start_date: {self.movie_session_start_date}"
 
 
 class CinemaSession(models.Model):
@@ -52,10 +52,8 @@ class CinemaSession(models.Model):
         unique_together = ["cinema_hall", 'movie_show_starts']
     
     def __str__(self):
-        return "title: {}; movie_season: {};cinema_hall: {};movie_show_starts: {}".format(self.title,
-                                                                                          self.movie_season,
-                                                                                          self.cinema_hall,
-                                                                                          self.movie_show_starts)
+        return f"title: {self.title}; movie_season: {self.movie_season};cinema_hall: {self.cinema_hall} " \
+               f"movie_show_starts: {self.movie_show_starts}"
 
 
 class Purchase(models.Model):
@@ -71,5 +69,4 @@ class Purchase(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return "user: {}; cinema_session: {}; quantity:{}".format(self.user, self.cinema_session,
-                                                                  self.quantity)
+        return f"user: {self.user}; cinema_session: {self.cinema_session}; quantity:{self.quantity}"
