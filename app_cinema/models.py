@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -25,35 +27,43 @@ class CinemaHall(models.Model):
 class MovieSeason(models.Model):
     title = models.CharField(max_length=200, blank=False)
     description = models.TextField(max_length=10000, null=True)
-    img_url = models.ImageField()
-    movie_show_time_starts = models.TimeField()
-    movie_show_time_ends = models.TimeField()
+    img = models.ImageField()
     movie_session_start_date = models.DateField()
     movie_session_end_date = models.DateField()
+    film_duration = models.TimeField()
     
     class Meta:
         ordering = ['movie_session_start_date']
     
     def __str__(self):
-        return f"title: {self.title}; movie_session_start_date: {self.movie_session_start_date}"
+        return self.title
 
 
 class CinemaSession(models.Model):
-    title = models.CharField(max_length=200, blank=False)
     movie_season = models.ForeignKey(MovieSeason, on_delete=models.CASCADE, null=False)
     cinema_hall = models.ForeignKey(CinemaHall, on_delete=models.CASCADE, null=False)
-    movie_show_starts = models.DateTimeField()
+    movie_show_starts = models.DateTimeField(db_index=True)
     movie_show_ends = models.DateTimeField()
     empty_seats = models.PositiveIntegerField()
     ticket_price = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     
     class Meta:
-        ordering = ['title', 'movie_show_starts']
+        ordering = ['movie_show_starts']
         unique_together = ["cinema_hall", 'movie_show_starts']
     
     def __str__(self):
-        return f"title: {self.title}; movie_season: {self.movie_season};cinema_hall: {self.cinema_hall} " \
+        return f"title: {self.movie_season}; movie_season: {self.movie_season};cinema_hall: {self.cinema_hall} " \
                f"movie_show_starts: {self.movie_show_starts}"
+    
+    def save(self, **kwargs):
+        if self.pk is None:
+            self.empty_seats = self.cinema_hall.number_of_seats
+            
+            film_duration = self.movie_season.film_duration
+            self.movie_show_ends = self.movie_show_starts + timedelta(hours=film_duration.hour,
+                                                                      minutes=film_duration.minute,
+                                                                      seconds=film_duration.second)
+        super().save(**kwargs)
 
 
 class Purchase(models.Model):

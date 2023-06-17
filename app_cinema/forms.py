@@ -8,9 +8,9 @@ class UserCreateForm(UserCreationForm):
         model = User
         fields = ['username', 'money']
     
-    def __init__(self, *args, **kwargs):
-        super(UserCreateForm, self).__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'class': 'form-control'})
-        self.fields['money'].widget.attrs.update({'class': 'form-control'})
-        self.fields['password1'].widget.attrs.update({'class': 'form-control'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+    # def __init__(self, *args, **kwargs):
+    #     super(UserCreateForm, self).__init__(*args, **kwargs)
+    #     self.fields['username'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['money'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['password1'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['password2'].widget.attrs.update({'class': 'form-control'})
